@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuel Efficiency Analyzer</title>
+    <link rel="stylesheet" href="/css/efficiency.css">
+</head>
+<body>
+
+    <div class="main-container">
+        <h1>🚗 Fuel Efficiency Analytics</h1>
+
+        <a th:href="@{/analytics/dashboard}" class="dashboard-button">
+            📈 View Analytics Dashboard
+        </a>
+
+        <h3>Input Trip Data</h3>
+
+        <form th:action="@{/calculate}" th:object="${tripData}" method="POST">
+
+            <div class="form-group">
+                <label for="vehicleId">Vehicle ID / Type:</label>
+                <input type="text" id="vehicleId" th:field="*{vehicleId}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="distanceKm">Distance Traveled (Km):</label>
+                <input type="number" id="distanceKm" th:field="*{distanceKm}" step="0.01" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fuelConsumedLiters">Fuel Consumed (Liters):</label>
+                <input type="number" id="fuelConsumedLiters" th:field="*{fuelConsumedLiters}" step="0.01" min="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fuelPricePerLiter">Fuel Price (₱/Liter) - Optional:</label>
+                <input type="number" 
+                       id="fuelPricePerLiter" 
+                       name="fuelPricePerLiter" 
+                       step="0.01" 
+                       min="0" 
+                       placeholder="e.g., 65.50">
+                <small style="display: block; color: #666; margin-top: 5px;">
+                    Enter current fuel price for cost analysis
+                </small>
+            </div>
+
+            <button type="submit">Analyze & Save Efficiency</button>
+        </form>
+
+        <hr>
+
+        <div th:if="${report}">
+            <h2>✅ Analysis Report for Vehicle: <span th:text="${report.vehicleId}"></span> - SAVED!</h2>
+            <p>Calculated Efficiency:
+                <strong><span th:text="${report.efficiencyKmPerL}"></span> Km/L</strong>
+            </p>
+            <p>Status: <span th:text="${report.message}"></span></p>
+        </div>
+
+        <hr>
+
+        <h2>Historical Reports from MySQL</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vehicle ID</th>
+                    <th>Km/L</th>
+                    <th>Status</th>
+                    <th>Analyzed At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="report : ${reports}">
+                    <td th:text="${report.id}"></td>
+                    <td th:text="${report.vehicleId}"></td>
+                    <td th:text="${report.efficiencyKmPerL}"></td>
+                    <td th:text="${report.message}"></td>
+                    <td th:text="${report.analyzedAt}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
